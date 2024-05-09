@@ -1,0 +1,26 @@
+version: '3'
+services:
+  db:
+    image: mysql:8.1.0
+    environment:
+      MYSQL_ROOT_PASSWORD: mysecretpassword
+      MYSQL_DATABASE: pizzeria_db
+    ports:
+      - "3306:3306"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A Pizzeria worker --loglevel=info
+    depends_on:
+      - db
